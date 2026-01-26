@@ -228,22 +228,29 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
   const [lumpInput, setLumpInput] = useState<CalculatorInput>(lumpScenarios[0].input);
   const [recurringInput, setRecurringInput] = useState<CalculatorInput>(recurringDefault);
   const [recurringView, setRecurringView] = useState<'year' | 'month'>('year');
+  const [calculatedInput, setCalculatedInput] = useState<CalculatorInput | null>(null);
 
   const input = mode === 'lump' ? lumpInput : recurringInput;
   const setInput = mode === 'lump' ? setLumpInput : setRecurringInput;
-  const result = useMemo(() => calculateCompound(input), [input]);
+  const result = useMemo(
+    () => (calculatedInput ? calculateCompound(calculatedInput) : null),
+    [calculatedInput]
+  );
 
   const handleScenario = (scenario: Scenario) => {
     if (scenario.input.mode === 'lump') {
       setLumpInput(scenario.input);
+      setCalculatedInput(scenario.input);
       return;
     }
 
     setRecurringInput(scenario.input);
+    setCalculatedInput(scenario.input);
   };
 
   const scenarios = mode === 'lump' ? lumpScenarios : recurringScenarios;
-  const recurringRows = recurringView === 'month' ? result.monthly : result.yearly;
+  const recurringRows =
+    result && recurringView === 'month' ? result.monthly : result?.yearly ?? [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -291,31 +298,46 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
 
         <div className="rounded-2xl border border-slate-200 bg-white/80 p-5 dark:border-slate-800 dark:bg-slate-900/40">
           <p className="text-sm font-semibold text-slate-900 dark:text-white">결과</p>
-          <div className="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
-            <div className="flex items-center justify-between">
-              <span>최종 금액</span>
-              <span className="text-base font-semibold text-emerald-600 dark:text-emerald-200">
-                {formatCurrency(result.finalAmount)}
-              </span>
+          {result ? (
+            <div className="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
+              <div className="flex items-center justify-between">
+                <span>최종 금액</span>
+                <span className="text-base font-semibold text-emerald-600 dark:text-emerald-200">
+                  {formatCurrency(result.finalAmount)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>총 납입 원금</span>
+                <span className="font-semibold text-slate-900 dark:text-white">
+                  {formatCurrency(result.totalContributed)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>총 수익</span>
+                <span className="font-semibold text-slate-900 dark:text-white">
+                  {formatCurrency(result.totalInterest)}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center justify-between">
-              <span>총 납입 원금</span>
-              <span className="font-semibold text-slate-900 dark:text-white">
-                {formatCurrency(result.totalContributed)}
-              </span>
+          ) : (
+            <div className="mt-4 rounded-xl border border-dashed border-slate-300 px-4 py-6 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+              계산하기 버튼을 눌러 결과를 확인하세요.
             </div>
-            <div className="flex items-center justify-between">
-              <span>총 수익</span>
-              <span className="font-semibold text-slate-900 dark:text-white">
-                {formatCurrency(result.totalInterest)}
-              </span>
-            </div>
+          )}
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+            <span>
+              {mode === 'lump'
+                ? '거치식은 입력한 회차 기준으로 복리가 적용됩니다.'
+                : '연복리 적립식은 월별 이자를 2자리 소수로 계산해 누적하고, 표에서는 원 단위로 반올림해 표시합니다.'}
+            </span>
+            <button
+              type="button"
+              onClick={() => setCalculatedInput(input)}
+              className="rounded-full border border-emerald-400 bg-emerald-400/10 px-4 py-1 text-xs font-semibold text-emerald-600 hover:border-emerald-500 dark:text-emerald-200"
+            >
+              계산하기
+            </button>
           </div>
-          <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
-            {mode === 'lump'
-              ? '거치식은 입력한 회차 기준으로 복리가 적용됩니다.'
-              : '연복리 적립식은 월별 이자를 2자리 소수로 계산해 누적하고, 표에서는 원 단위로 반올림해 표시합니다.'}
-          </p>
         </div>
       </div>
 
@@ -388,47 +410,50 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
               </tr>
             </thead>
             <tbody>
-              {result.yearly.length === 0 && (
+              {!result || result.yearly.length === 0 ? (
                 <tr>
                   <td
                     colSpan={mode === 'lump' ? 4 : 4}
                     className="px-5 py-6 text-center text-slate-500 dark:text-slate-400"
                   >
-                    {mode === 'lump'
-                      ? '기간을 입력하면 회차별 요약이 표시됩니다.'
-                      : '기간을 입력하면 요약이 표시됩니다.'}
+                    {result
+                      ? mode === 'lump'
+                        ? '기간을 입력하면 회차별 요약이 표시됩니다.'
+                        : '기간을 입력하면 요약이 표시됩니다.'
+                      : '계산하기 버튼을 눌러 결과를 확인하세요.'}
                   </td>
                 </tr>
-              )}
-              {(mode === 'lump' ? result.yearly : recurringRows).map((row) => (
-                <tr key={row.period} className="border-t border-slate-200 dark:border-slate-800">
-                  <td className="px-5 py-3">
-                    {mode === 'lump'
-                      ? row.period
-                      : recurringView === 'year'
-                        ? `${row.period}년`
-                        : `${row.period}월`}
-                  </td>
-                  {mode === 'recurring' && (
-                    <td className="px-5 py-3">{formatCurrency(row.contributedStart)}</td>
-                  )}
-                  <td className="px-5 py-3">
-                    {mode === 'lump' && typeof row.periodInterest === 'number'
-                      ? formatCurrency(row.periodInterest)
-                      : formatCurrency(row.interestEarned)}
-                  </td>
-                  <td className="px-5 py-3">{formatCurrency(row.total)}</td>
-                  {mode === 'lump' && (
+              ) : (
+                (mode === 'lump' ? result.yearly : recurringRows).map((row) => (
+                  <tr key={row.period} className="border-t border-slate-200 dark:border-slate-800">
                     <td className="px-5 py-3">
-                      {formatPercent(
-                        row.contributedStart === 0
-                          ? 0
-                          : (row.interestEarned / row.contributedStart) * 100
-                      )}
+                      {mode === 'lump'
+                        ? row.period
+                        : recurringView === 'year'
+                          ? `${row.period}년`
+                          : `${row.period}월`}
                     </td>
-                  )}
-                </tr>
-              ))}
+                    {mode === 'recurring' && (
+                      <td className="px-5 py-3">{formatCurrency(row.contributedStart)}</td>
+                    )}
+                    <td className="px-5 py-3">
+                      {mode === 'lump' && typeof row.periodInterest === 'number'
+                        ? formatCurrency(row.periodInterest)
+                        : formatCurrency(row.interestEarned)}
+                    </td>
+                    <td className="px-5 py-3">{formatCurrency(row.total)}</td>
+                    {mode === 'lump' && (
+                      <td className="px-5 py-3">
+                        {formatPercent(
+                          row.contributedStart === 0
+                            ? 0
+                            : (row.interestEarned / row.contributedStart) * 100
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
