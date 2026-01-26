@@ -1,0 +1,21 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CompoundCalculator from '../../components/CompoundCalculator';
+---
+
+<Layout
+  title="적립식 복리 계산기 · Snowballlab"
+  description="적립식(매월 납입) 복리 계산기"
+>
+  <section class="space-y-4">
+    <p class="text-sm uppercase tracking-widest text-slate-500 dark:text-slate-400">Recurring Calculator</p>
+    <h1 class="text-3xl font-semibold text-slate-900 dark:text-white md:text-4xl">적립식 복리 계산기</h1>
+    <p class="max-w-2xl text-slate-600 dark:text-slate-300">
+      매월 납입하는 적립식 투자 시나리오를 계산합니다. 월/연 보기로 결과를 확인할 수 있습니다.
+    </p>
+  </section>
+
+  <section class="mt-10 rounded-2xl border border-slate-200 bg-white/80 p-6 dark:border-slate-800 dark:bg-slate-900/40">
+    <CompoundCalculator client:load mode="recurring" />
+  </section>
+</Layout>

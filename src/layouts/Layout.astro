@@ -1,0 +1,100 @@
+---
+import '../styles/global.css';
+import { withBase } from '../utils/paths';
+
+const { title = 'Snowballlab', description = '복리 계산기 기반 유틸 사이트' } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href={withBase(base, '/favicon.svg')} />
+    <link rel="icon" href={withBase(base, '/favicon.ico')} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <script is:inline>
+      const storageKey = 'theme';
+      const className = 'dark';
+      const root = document.documentElement;
+      const prefersDark = () =>
+        window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const applyTheme = (theme) => {
+        if (theme === 'dark') {
+          root.classList.add(className);
+        } else {
+          root.classList.remove(className);
+        }
+      };
+      const stored = localStorage.getItem(storageKey);
+      applyTheme(stored === 'dark' ? 'dark' : 'light');
+      window.addEventListener('DOMContentLoaded', () => {
+        const button = document.querySelector('[data-theme-toggle]');
+        if (!button) return;
+        const updateLabel = () => {
+          const isDark = root.classList.contains(className);
+          button.setAttribute('aria-pressed', String(isDark));
+          button.textContent = isDark ? '다크' : '라이트';
+        };
+        updateLabel();
+        button.addEventListener('click', () => {
+          const isDark = root.classList.contains(className);
+          const next = isDark ? 'light' : 'dark';
+          localStorage.setItem(storageKey, next);
+          applyTheme(next);
+          updateLabel();
+        });
+      });
+    </script>
+  </head>
+  <body class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <header class="border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
+      <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-4">
+        <a class="text-lg font-semibold tracking-tight" href={base}>
+          Snowballlab
+        </a>
+        <nav class="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-300">
+          <a class="hover:text-slate-900 dark:hover:text-white" href={withBase(base, '/compound/lump/')}>
+            거치식
+          </a>
+          <a class="hover:text-slate-900 dark:hover:text-white" href={withBase(base, '/compound/recurring/')}>
+            적립식
+          </a>
+          <a class="hover:text-slate-900 dark:hover:text-white" href={withBase(base, '/guides/')}>
+            가이드
+          </a>
+          <a class="hover:text-slate-900 dark:hover:text-white" href={withBase(base, '/about/')}>
+            About
+          </a>
+          <a class="hover:text-slate-900 dark:hover:text-white" href={withBase(base, '/contact/')}>
+            Contact
+          </a>
+          <a class="hover:text-slate-900 dark:hover:text-white" href={withBase(base, '/privacy/')}>
+            Privacy
+          </a>
+          <button
+            type="button"
+            data-theme-toggle
+            class="cursor-pointer rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500"
+            aria-pressed="false"
+          >
+            라이트
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="mx-auto w-full max-w-6xl px-5 py-10">
+      <slot />
+    </main>
+
+    <footer class="border-t border-slate-200 py-8 dark:border-slate-800">
+      <div class="mx-auto w-full max-w-6xl px-5 text-xs text-slate-500 dark:text-slate-400">
+        <p>Snowballlab · 복리 계산기 기반 유틸 사이트</p>
+        <p>투자 조언이 아니며 정보 제공 목적입니다.</p>
+      </div>
+    </footer>
+  </body>
+</html>
