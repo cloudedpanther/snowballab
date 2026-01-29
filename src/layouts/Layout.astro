@@ -11,8 +11,11 @@ const base = import.meta.env.BASE_URL;
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href={withBase(base, '/favicon.svg')} />
-    <link rel="icon" href={withBase(base, '/favicon.ico')} />
+    <link rel="icon" type="image/png" href={withBase(base, '/favicon/favicon-32x32.png')} />
+    <link rel="icon" type="image/png" href={withBase(base, '/favicon/favicon-16x16.png')} />
+    <link rel="icon" href={withBase(base, '/favicon/favicon.ico')} />
+    <link rel="apple-touch-icon" href={withBase(base, '/favicon/apple-touch-icon.png')} />
+    <link rel="manifest" href={withBase(base, '/favicon/site.webmanifest')} />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical ?? withBase(base, '/')} />
@@ -72,9 +75,12 @@ const base = import.meta.env.BASE_URL;
           <a class="hover:text-slate-900 dark:hover:text-white" href={withBase(base, '/compound/recurring/')}>
             적립식
           </a>
+          <!-- TODO: 가이드 진입점은 Stage 6에서 공개 -->
+          <!--
           <a class="hover:text-slate-900 dark:hover:text-white" href={withBase(base, '/guides/')}>
             가이드
           </a>
+          -->
           <a class="hover:text-slate-900 dark:hover:text-white" href={withBase(base, '/about/')}>
             About
           </a>
