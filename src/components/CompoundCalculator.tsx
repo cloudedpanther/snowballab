@@ -110,20 +110,13 @@ const parseNumberParam = (value: string | null, fallback: number) => {
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
-const parseCompound = (
-  value: string | null,
-  fallback: CompoundFrequency
-): CompoundFrequency => {
+const parseCompound = (value: string | null, fallback: CompoundFrequency): CompoundFrequency => {
   if (!value) return fallback;
   if (value === 'yearly' || value === 'monthly') return value;
   return fallback;
 };
 
-const buildQuery = (
-  mode: Mode,
-  input: CalculatorInput,
-  recurringView: 'year' | 'month'
-) => {
+const buildQuery = (mode: Mode, input: CalculatorInput, recurringView: 'year' | 'month') => {
   const params = new URLSearchParams();
   params.set('p', String(input.principal));
   params.set('r', String(input.annualRate));
@@ -285,7 +278,7 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
 
   const scenarios = mode === 'lump' ? lumpScenarios : recurringScenarios;
   const recurringRows =
-    result && recurringView === 'month' ? result.monthly : result?.yearly ?? [];
+    result && recurringView === 'month' ? result.monthly : (result?.yearly ?? []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -307,7 +300,10 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
         principal: parseNumberParam(params.get('p'), recurringDefault.principal),
         annualRate: parseNumberParam(params.get('r'), recurringDefault.annualRate),
         years: parseNumberParam(params.get('y'), recurringDefault.years),
-        monthlyContribution: parseNumberParam(params.get('m'), recurringDefault.monthlyContribution),
+        monthlyContribution: parseNumberParam(
+          params.get('m'),
+          recurringDefault.monthlyContribution
+        ),
         compound: parseCompound(params.get('c'), recurringDefault.compound)
       };
       if (

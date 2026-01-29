@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { withBase } from '../../utils/paths';
 
 export const getStaticPaths = () => {
   const slugs = ['compound-interest-basics', 'rate-and-time', 'investment-goal'];
@@ -7,16 +8,21 @@ export const getStaticPaths = () => {
 };
 
 const { slug } = Astro.params;
+const base = import.meta.env.BASE_URL;
 ---
 
-<Layout title={`Guide · ${slug}`} description="복리 계산기 가이드 상세">
+<Layout
+  title={`Guide · ${slug}`}
+  description="복리 계산기 가이드 상세"
+  canonical={withBase(base, `/guides/${slug}/`)}
+>
   <section class="space-y-4">
     <h1 class="text-2xl font-semibold">가이드 상세</h1>
-    <p class="text-sm text-slate-300">
-      현재 슬러그: <span class="font-semibold text-white">{slug}</span>
+    <p class="text-sm text-slate-600 dark:text-slate-300">
+      현재 슬러그: <span class="font-semibold text-slate-900 dark:text-white">{slug}</span>
     </p>
-    <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 text-sm text-slate-300">
-      <p class="font-semibold text-white">콘텐츠 준비 중</p>
+    <div class="rounded-2xl border border-slate-200 bg-white/80 p-5 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-300">
+      <p class="font-semibold text-slate-900 dark:text-white">콘텐츠 준비 중</p>
       <p class="mt-2">Stage 4에서 Markdown 기반 콘텐츠를 연결합니다.</p>
     </div>
   </section>
