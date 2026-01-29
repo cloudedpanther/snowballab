@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   calculateCompound,
   type CalculatorInput,
@@ -102,6 +102,40 @@ const modeLabels: Record<Mode, string> = {
 const toNumber = (value: string) => {
   const parsed = Number(value.replace(/,/g, ''));
   return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const parseNumberParam = (value: string | null, fallback: number) => {
+  if (!value) return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+const parseCompound = (
+  value: string | null,
+  fallback: CompoundFrequency
+): CompoundFrequency => {
+  if (!value) return fallback;
+  if (value === 'yearly' || value === 'monthly') return value;
+  return fallback;
+};
+
+const buildQuery = (
+  mode: Mode,
+  input: CalculatorInput,
+  recurringView: 'year' | 'month'
+) => {
+  const params = new URLSearchParams();
+  params.set('p', String(input.principal));
+  params.set('r', String(input.annualRate));
+  if (mode === 'lump') {
+    params.set('n', String(input.years));
+  } else {
+    params.set('y', String(input.years));
+    params.set('m', String(input.monthlyContribution));
+    params.set('c', input.compound);
+    params.set('v', recurringView);
+  }
+  return params;
 };
 
 const updateInput = (
@@ -229,6 +263,7 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
   const [recurringInput, setRecurringInput] = useState<CalculatorInput>(recurringDefault);
   const [recurringView, setRecurringView] = useState<'year' | 'month'>('year');
   const [calculatedInput, setCalculatedInput] = useState<CalculatorInput | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const input = mode === 'lump' ? lumpInput : recurringInput;
   const setInput = mode === 'lump' ? setLumpInput : setRecurringInput;
@@ -251,6 +286,68 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
   const scenarios = mode === 'lump' ? lumpScenarios : recurringScenarios;
   const recurringRows =
     result && recurringView === 'month' ? result.monthly : result?.yearly ?? [];
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    if (mode === 'lump') {
+      const nextInput = {
+        ...lumpScenarios[0].input,
+        principal: parseNumberParam(params.get('p'), lumpScenarios[0].input.principal),
+        annualRate: parseNumberParam(params.get('r'), lumpScenarios[0].input.annualRate),
+        years: parseNumberParam(params.get('n'), lumpScenarios[0].input.years)
+      };
+      if (params.has('p') || params.has('r') || params.has('n')) {
+        setLumpInput(nextInput);
+        setCalculatedInput(nextInput);
+      }
+    } else {
+      const nextInput = {
+        ...recurringDefault,
+        principal: parseNumberParam(params.get('p'), recurringDefault.principal),
+        annualRate: parseNumberParam(params.get('r'), recurringDefault.annualRate),
+        years: parseNumberParam(params.get('y'), recurringDefault.years),
+        monthlyContribution: parseNumberParam(params.get('m'), recurringDefault.monthlyContribution),
+        compound: parseCompound(params.get('c'), recurringDefault.compound)
+      };
+      if (
+        params.has('p') ||
+        params.has('r') ||
+        params.has('y') ||
+        params.has('m') ||
+        params.has('c')
+      ) {
+        setRecurringInput(nextInput);
+        setCalculatedInput(nextInput);
+      }
+      if (params.get('v') === 'month') {
+        setRecurringView('month');
+      }
+    }
+  }, [mode]);
+
+  useEffect(() => {
+    if (!calculatedInput || typeof window === 'undefined') return;
+    const params = buildQuery(mode, calculatedInput, recurringView);
+    const url = new URL(window.location.href);
+    url.search = params.toString();
+    window.history.replaceState({}, '', url.toString());
+  }, [calculatedInput, mode, recurringView]);
+
+  const handleShare = async () => {
+    if (typeof window === 'undefined') return;
+    const params = buildQuery(mode, input, recurringView);
+    const url = new URL(window.location.href);
+    url.search = params.toString();
+    try {
+      await navigator.clipboard.writeText(url.toString());
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    } catch {
+      setCopied(false);
+      window.prompt('공유 링크를 복사하세요.', url.toString());
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -330,13 +427,22 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
                 ? '거치식은 입력한 회차 기준으로 복리가 적용됩니다.'
                 : '연복리 적립식은 월별 이자를 2자리 소수로 계산해 누적하고, 표에서는 원 단위로 반올림해 표시합니다.'}
             </span>
-            <button
-              type="button"
-              onClick={() => setCalculatedInput(input)}
-              className="rounded-full border border-emerald-400 bg-emerald-400/10 px-4 py-1 text-xs font-semibold text-emerald-600 hover:border-emerald-500 dark:text-emerald-200"
-            >
-              계산하기
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setCalculatedInput(input)}
+                className="rounded-full border border-emerald-400 bg-emerald-400/10 px-4 py-1 text-xs font-semibold text-emerald-600 hover:border-emerald-500 dark:text-emerald-200"
+              >
+                계산하기
+              </button>
+              <button
+                type="button"
+                onClick={handleShare}
+                className="rounded-full border border-slate-300 px-3 py-1 text-xs text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500"
+              >
+                {copied ? '복사됨' : '링크 복사'}
+              </button>
+            </div>
           </div>
         </div>
       </div>

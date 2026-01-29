@@ -1,11 +1,15 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import CompoundCalculator from '../../components/CompoundCalculator';
+import { withBase } from '../../utils/paths';
+
+const base = import.meta.env.BASE_URL;
 ---
 
 <Layout
   title="적립식 복리 계산기 · Snowballlab"
   description="적립식(매월 납입) 복리 계산기"
+  canonical={withBase(base, '/compound/recurring/')}
 >
   <section class="space-y-4">
     <p class="text-sm uppercase tracking-widest text-slate-500 dark:text-slate-400">Recurring Calculator</p>

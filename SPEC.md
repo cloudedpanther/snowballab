@@ -59,26 +59,59 @@
 - 검사 기준(DoD): 입력값 변경 시 결과 정상 계산, 엣지 케이스 기본 처리
 - 커밋 메시지 예시: `feat: add compound interest calculator MVP`
 
-### Stage 3: 공유/SEO/배포 준비
+### Stage 3: 공유 URL(쿼리) + Canonical 처리
 
-- 목표: 쿼리스트링 공유 + SEO 기본 + 배포 워크플로(선택)
-- 산출물: 쿼리스트링 직렬화/복원, 메타/사이트맵/robots, GH Pages 배포 워크플로(범위 내)
-- 검사 기준(DoD): 쿼리스트링으로 상태 복원, SEO 파일 생성 확인
-- 커밋 메시지 예시: `feat: add shareable URLs and basic SEO`
+- 목표: “링크 공유=상태 복원”을 구현하되, SEO 중복 문제를 canonical로 방어
+- 산출물:
+  - 입력값 ↔ URL 쿼리스트링 직렬화/복원(양방향)
+  - 쿼리 포함 URL의 canonical을 “쿼리 없는 대표 URL”로 고정
+  - 사이트 내 공유 버튼(현재 입력값이 포함된 URL 복사)
+- 검사 기준(DoD):
+  - 새로고침/직접 접속 시 쿼리스트링으로 상태가 정확히 복원됨
+  - 동일 페이지에서 쿼리 유무와 상관없이 canonical이 대표 URL로 유지됨
+  - sitemap에는 쿼리 URL이 포함되지 않음(대표 URL만)
+- 커밋 메시지 예시: `feat: add shareable URLs with canonical guard`
 
-### Stage 4: 승인용 콘텐츠 보강
+### Stage 4: SEO 기본 세트 + 인덱싱 준비
 
-- 목표: 홈 가이드/FAQ 강화 + 가이드 글 5개 추가
-- 산출물: `/guides` 목록, `/guides/[slug]` 5개 글, 홈 콘텐츠 보강
-- 검사 기준(DoD): 5개 가이드 렌더, 홈 섹션 채움
-- 커밋 메시지 예시: `content: add guides and expand FAQ`
+- 목표: 검색엔진이 인덱싱하기 좋은 “정적 SEO 기본 세트” 구축
+- 산출물:
+  - 페이지별 title/description(홈/거치식/적립식/가이드/정책 페이지)
+  - `robots.txt`, `sitemap.xml` 생성 및 경로 확인
+  - Open Graph/Twitter 메타(기본)
+  - 404/네비게이션 기본 정리(크롤링/사용성 보강)
+- 검사 기준(DoD):
+  - `robots.txt`, `sitemap.xml`이 배포 산출물(dist)에 포함됨
+  - 주요 페이지의 메타 태그가 정상 출력됨(title/description/og)
+  - sitemap에 대표 URL(쿼리 없는)만 포함됨
+- 커밋 메시지 예시: `feat: add sitemap robots and basic meta`
 
-### Stage 5: AdSense 통합
+### Stage 5: 배포 워크플로 + GitHub Pages 커스텀 도메인
 
-- 목표: AdSense 스크립트 통합(승인 후), 환경변수로 on/off
-- 산출물: 광고 스크립트 조건부 로딩
-- 검사 기준(DoD): 환경변수로 광고 on/off 정상 동작
-- 커밋 메시지 예시: `feat: add adsense integration toggle`
+- 목표: GitHub Pages 배포 자동화 및 커스텀 도메인 연결까지 완료
+- 산출물:
+  - GitHub Actions 기반 Pages 배포 워크플로(정적 빌드 → 배포)
+  - Pages 설정에 맞는 base path/asset 경로 최종 점검
+  - 커스텀 도메인 연결 가이드/체크리스트(README 또는 docs) + `CNAME` 반영
+- 검사 기준(DoD):
+  - main 브랜치 push 시 자동 배포가 동작함
+  - 커스텀 도메인으로 접속 가능(HTTPS 활성화 가능 상태)
+  - base path 환경에서도 라우팅/정적 리소스 경로가 깨지지 않음
+- 커밋 메시지 예시: `chore: automate gh-pages deploy and configure custom domain`
+
+### Stage 6: 승인용 콘텐츠 보강 + AdSense 통합
+
+- 목표: 승인 가능성을 높이기 위한 콘텐츠 보강 후 AdSense 토글 통합
+- 산출물:
+  - 홈 가이드/FAQ 강화 + 가이드 글 5개 추가(`/guides`, `/guides/[slug]`)
+  - 신뢰 페이지(About/Contact/Privacy) 문구 품질 보강
+  - AdSense 스크립트 조건부 로딩(환경변수 on/off)
+- 검사 기준(DoD):
+  - 5개 가이드 렌더 + 홈 콘텐츠 충분(얇지 않게)
+  - 환경변수로 광고 on/off 정상 동작
+- 커밋 메시지 예시:
+  - `content: add guides and expand trust pages`
+  - `feat: add adsense integration toggle`
 
 ## 완료 정의(DoD) 체크리스트
 
@@ -86,9 +119,10 @@
 - Stage 1: 기본 페이지 렌더, base path 고려, npm 스크립트 정상
 - Stage 1 추가 품질: `npm run check` 통과(포맷/린트/타입체크)
 - Stage 2: 계산기 입력/출력/예시 버튼 동작
-- Stage 3: 쿼리스트링 복원, SEO 파일 생성, 배포 준비 요소 존재
-- Stage 4: 가이드 5개/FAQ/홈 콘텐츠 강화 완료
-- Stage 5: 광고 on/off 환경변수로 제어
+- Stage 3: 쿼리스트링 복원 + canonical 방어 + 공유 버튼
+- Stage 4: robots/sitemap/meta/og 정상 + sitemap에 대표 URL만
+- Stage 5: GH Actions 배포 + 커스텀 도메인 연결 + base path 무결성
+- Stage 6: 가이드 5개/FAQ 보강 + 광고 토글
 
 ## 범위 밖(하지 말 것)
 
