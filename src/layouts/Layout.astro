@@ -32,8 +32,6 @@ const base = import.meta.env.BASE_URL;
       const storageKey = 'theme';
       const className = 'dark';
       const root = document.documentElement;
-      const prefersDark = () =>
-        window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       const applyTheme = (theme) => {
         if (theme === 'dark') {
           root.classList.add(className);
