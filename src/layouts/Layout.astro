@@ -81,15 +81,6 @@ const base = import.meta.env.BASE_URL;
             가이드
           </a>
           -->
-          <a class="hover:text-slate-900 dark:hover:text-white" href={withBase(base, '/about/')}>
-            About
-          </a>
-          <a class="hover:text-slate-900 dark:hover:text-white" href={withBase(base, '/contact/')}>
-            Contact
-          </a>
-          <a class="hover:text-slate-900 dark:hover:text-white" href={withBase(base, '/privacy/')}>
-            Privacy
-          </a>
           <button
             type="button"
             data-theme-toggle
@@ -107,9 +98,23 @@ const base = import.meta.env.BASE_URL;
     </main>
 
     <footer class="border-t border-slate-200 py-8 dark:border-slate-800">
-      <div class="mx-auto w-full max-w-6xl px-5 text-xs text-slate-500 dark:text-slate-400">
-        <p>Snowballlab · 복리 계산기 기반 유틸 사이트</p>
-        <p>투자 조언이 아니며 정보 제공 목적입니다.</p>
+      <div class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-5 text-xs text-slate-500 dark:text-slate-400 md:flex-row md:items-start md:justify-between">
+        <div class="space-y-2">
+          <p>Snowballlab · 복리 계산기 기반 유틸 사이트</p>
+          <p>투자 조언이 아니며 정보 제공 목적입니다.</p>
+          <p>© {new Date().getFullYear()} Snowballlab. All rights reserved.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 md:justify-end">
+          <a class="hover:text-slate-900 dark:hover:text-white" href={withBase(base, '/about/')}>
+            About
+          </a>
+          <a class="hover:text-slate-900 dark:hover:text-white" href={withBase(base, '/contact/')}>
+            Contact
+          </a>
+          <a class="hover:text-slate-900 dark:hover:text-white" href={withBase(base, '/privacy/')}>
+            Privacy
+          </a>
+        </div>
       </div>
     </footer>
   </body>
