@@ -99,18 +99,50 @@
   - base path 환경에서도 라우팅/정적 리소스 경로가 깨지지 않음
 - 커밋 메시지 예시: `chore: automate gh-pages deploy and configure custom domain`
 
-### Stage 6: 승인용 콘텐츠 보강 + AdSense 통합
+### Stage 6-1: 승인 가능성 보강(콘텐츠/신뢰)
 
-- 목표: 승인 가능성을 높이기 위한 콘텐츠 보강 후 AdSense 토글 통합
+- 목표: 승인 가능성을 높이기 위한 콘텐츠/신뢰 페이지 보강
 - 산출물:
   - 홈 가이드/FAQ 강화 + 가이드 글 5개 추가(`/guides`, `/guides/[slug]`)
   - 신뢰 페이지(About/Contact/Privacy) 문구 품질 보강
-  - AdSense 스크립트 조건부 로딩(환경변수 on/off)
 - 검사 기준(DoD):
   - 5개 가이드 렌더 + 홈 콘텐츠 충분(얇지 않게)
-  - 환경변수로 광고 on/off 정상 동작
+  - 신뢰 페이지 품질 보강 완료
 - 커밋 메시지 예시:
   - `content: add guides and expand trust pages`
+
+### Stage 6-2: 승인 가능성 보강(기능)
+
+- 목표: 계산기 기능 보강으로 검색 유입 확대
+- 산출물:
+  - 적립식 복리 계산기에 “연도별 매월 적립 금액 설정” 기능 추가
+- 검사 기준(DoD):
+  - 적립식 보강 기능이 정상 동작
+- 커밋 메시지 예시:
+  - `feat: add recurring yearly contribution controls`
+
+### Stage 6-3: 확장 계산기(선택)
+
+- 목표: 추가 계산기 페이지를 통해 검색 유입 확대
+- 산출물(선택, 진행 시 확정):
+  - 연봉 실수령액(세후 월급) 계산기
+  - 퇴직금 계산기
+  - 대출 이자/상환 스케줄 계산기
+  - 예금/적금 만기 수령액 계산기
+  - 연금저축/IRP 세액공제(절세) 계산기
+- 검사 기준(DoD):
+  - 진행한 계산기별 기본 입출력 정상 동작
+- 커밋 메시지 예시:
+  - `feat: add additional calculators`
+
+### Stage 7: 광고 관련 통합
+
+- 목표: AdSense 승인 후 광고 스크립트 조건부 통합
+- 산출물:
+  - AdSense 스크립트 조건부 로딩(환경변수 on/off)
+- 검사 기준(DoD):
+  - 환경변수로 광고 on/off 정상 동작
+- 커밋 메시지 예시:
   - `feat: add adsense integration toggle`
 
 ## 완료 정의(DoD) 체크리스트
@@ -122,7 +154,14 @@
 - Stage 3: 쿼리스트링 복원 + canonical 방어 + 공유 버튼
 - Stage 4: robots/sitemap/meta/og 정상 + sitemap에 대표 URL만
 - Stage 5: GH Actions 배포 + 커스텀 도메인 연결 + base path 무결성
-- Stage 6: 가이드 5개/FAQ 보강 + 광고 토글
+- Stage 6-1: 가이드 5개/FAQ 보강 + 신뢰 페이지 보강
+- Stage 6-2: 적립식 보강 기능
+- Stage 6-3: 확장 계산기(선택)
+- Stage 7: 광고 토글
+
+## 진행 현황
+
+- 완료: Stage 0, Stage 1, Stage 2, Stage 3, Stage 4, Stage 5
 
 ## 범위 밖(하지 말 것)
 
