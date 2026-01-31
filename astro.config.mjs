@@ -7,10 +7,10 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://cloudedpanther.github.io/snowballab',
+  site: 'https://snowballlab.co.kr',
   integrations: [react(), sitemap()],
 
-  base: import.meta.env.PROD ? '/snowballlab/' : '/',
+  base: '/',
   trailingSlash: 'always',
 
   vite: {

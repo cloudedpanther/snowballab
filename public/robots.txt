@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://cloudedpanther.github.io/snowballab/sitemap.xml
+Sitemap: https://snowballlab.co.kr/sitemap.xml
