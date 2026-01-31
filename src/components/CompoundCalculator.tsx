@@ -95,7 +95,7 @@ const compoundOptionsByMode: Record<Mode, { value: CompoundFrequency; label: str
 };
 
 const modeLabels: Record<Mode, string> = {
-  lump: '거치식',
+  lump: '일반(거치식)',
   recurring: '적립식'
 };
 
