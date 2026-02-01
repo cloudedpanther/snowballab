@@ -1,10 +1,13 @@
 ---
 import '../styles/global.css';
-import { withBase } from '../utils/paths';
+import { toAbsoluteUrl, withBase } from '../utils/paths';
 
 const { title = 'Snowballlab', description = '복리 계산기 기반 유틸 사이트', canonical } =
   Astro.props;
 const base = import.meta.env.BASE_URL;
+const site = import.meta.env.SITE ?? 'https://snowballlab.co.kr';
+const canonicalPath = canonical ?? withBase(base, '/');
+const canonicalHref = toAbsoluteUrl(canonicalPath, site);
 ---
 
 <!doctype html>
@@ -19,13 +22,13 @@ const base = import.meta.env.BASE_URL;
     <link rel="manifest" href={withBase(base, '/favicon/site.webmanifest')} />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical ?? withBase(base, '/')} />
+    <link rel="canonical" href={canonicalHref} />
     <title>{title}</title>
     <meta property="og:site_name" content="Snowballlab" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonical ?? withBase(base, '/')} />
+    <meta property="og:url" content={canonicalHref} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
