@@ -578,11 +578,7 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white/80 dark:border-slate-800 dark:bg-slate-900/40">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 px-5 py-4 dark:border-slate-800">
           <p className="text-sm font-semibold text-slate-900 dark:text-white">
-            {mode === 'lump'
-              ? '회차별 요약'
-              : recurringView === 'year'
-                ? '연별 요약'
-                : '월별 요약'}
+            {mode === 'lump' ? '회차별 요약' : recurringView === 'year' ? '연별 요약' : '월별 요약'}
           </p>
           {mode === 'recurring' && (
             <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
@@ -665,8 +661,12 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
                     </td>
                     {mode === 'recurring' && (
                       <td className="border-r border-slate-200 px-2 py-2 last:border-r-0 dark:border-slate-800 md:border-r-0 md:px-5 md:py-3">
-                        <span className="md:hidden">{formatCurrencyNumber(row.contributedStart)}</span>
-                        <span className="hidden md:inline">{formatCurrency(row.contributedStart)}</span>
+                        <span className="md:hidden">
+                          {formatCurrencyNumber(row.contributedStart)}
+                        </span>
+                        <span className="hidden md:inline">
+                          {formatCurrency(row.contributedStart)}
+                        </span>
                       </td>
                     )}
                     <td className="border-r border-slate-200 px-2 py-2 last:border-r-0 dark:border-slate-800 md:border-r-0 md:px-5 md:py-3">
