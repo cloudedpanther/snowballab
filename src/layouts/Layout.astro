@@ -2,12 +2,14 @@
 import '../styles/global.css';
 import { toAbsoluteUrl, withBase } from '../utils/paths';
 
-const { title = 'Snowballlab', description = '복리 계산기 기반 유틸 사이트', canonical } =
+const { title = 'Snowballlab', description = '복리 계산기 기반 유틸 사이트', canonical, ogImage } =
   Astro.props;
 const base = import.meta.env.BASE_URL;
 const site = import.meta.env.SITE ?? 'https://snowballlab.co.kr';
 const canonicalPath = canonical ?? withBase(base, '/');
 const canonicalHref = toAbsoluteUrl(canonicalPath, site);
+const ogImagePath = ogImage ?? withBase(base, '/favicon/android-chrome-512x512.png');
+const ogImageHref = toAbsoluteUrl(ogImagePath, site);
 ---
 
 <!doctype html>
@@ -29,7 +31,9 @@ const canonicalHref = toAbsoluteUrl(canonicalPath, site);
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalHref} />
+    <meta property="og:image" content={ogImageHref} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImageHref} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <script is:inline>

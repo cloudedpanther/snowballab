@@ -1,25 +1,176 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import CompoundCalculator from '../../components/CompoundCalculator';
-import { withBase } from '../../utils/paths';
+import { toAbsoluteUrl, withBase } from '../../utils/paths';
 
 const base = import.meta.env.BASE_URL;
+const site = import.meta.env.SITE ?? 'https://snowballlab.co.kr';
+const pageUrl = toAbsoluteUrl(withBase(base, '/compound/recurring/'), site);
+
+const breadcrumbList = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '홈', item: site + '/' },
+    { '@type': 'ListItem', position: 2, name: '적립식 복리 계산기', item: pageUrl },
+  ],
+};
+
+const softwareApplication = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: '적립식 복리 계산기',
+  applicationCategory: 'FinanceApplication',
+  description:
+    '월급·매월 납입 적립식 복리 계산기. 월 납입액, 연 수익률, 기간 입력으로 만기 금액과 연도별 성장을 확인하세요.',
+  url: pageUrl,
+};
+
+const faqPage = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '적립식 복리 계산기는 어떻게 쓰나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '월 납입액(만 원), 연 수익률(%), 기간(년), 복리 주기를 입력하면 최종 금액과 연도별 누적 금액이 표시됩니다. 월/연 보기로 결과를 확인할 수 있습니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '월 납입액은 세전·세후 중 어떤 금액인가요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '본 계산기는 입력하신 금액을 그대로 사용합니다. 실제 적금·펀드 등은 가입 상품에 따라 세전·세후가 다르므로, 참고용으로만 사용하세요.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '거치식과 적립식의 차이는?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '적립식은 매월(또는 주기별) 납입하는 금액이 N년 후 총 얼마가 되는지 계산합니다. 일시금을 한 번에 넣는 경우는 거치식 복리 계산기를 이용하세요.',
+      },
+    },
+  ],
+};
+
+const jsonLd = [breadcrumbList, softwareApplication, faqPage];
 ---
 
 <Layout
-  title="적립식 복리 계산기 · Snowballlab"
-  description="적립식(매월 납입) 복리 계산기"
+  title="적립식 복리 계산기 (월급·매월 납입) · Snowballlab"
+  description="월급·매월 납입 적립식 복리 계산기. 월 납입액, 연 수익률, 기간 입력으로 만기 금액과 연도별 성장을 확인하세요."
   canonical={withBase(base, '/compound/recurring/')}
 >
   <section class="space-y-4">
-    <p class="text-sm uppercase tracking-widest text-slate-500 dark:text-slate-400">Recurring Calculator</p>
-    <h1 class="text-3xl font-semibold text-slate-900 dark:text-white md:text-4xl">적립식 복리 계산기</h1>
+    <p class="text-sm uppercase tracking-widest text-slate-500 dark:text-slate-400">
+      Recurring Calculator
+    </p>
+    <h1 class="text-3xl font-semibold text-slate-900 dark:text-white md:text-4xl">
+      적립식 복리 계산기
+    </h1>
     <p class="max-w-2xl text-slate-600 dark:text-slate-300">
-      매월 납입하는 적립식 투자 시나리오를 계산합니다. 월/연 보기로 결과를 확인할 수 있습니다.
+      매월(또는 주기별) 납입하는 적립식 투자·적금의 복리 성장을 계산합니다. 월 납입액, 연 수익률(%), 기간(년)을
+      입력하면 최종 금액과 연도별 누적 금액을 확인할 수 있습니다.
     </p>
   </section>
 
   <section class="mt-10 rounded-2xl border border-slate-200 bg-white/80 p-6 dark:border-slate-800 dark:bg-slate-900/40">
     <CompoundCalculator client:load mode="recurring" />
   </section>
+
+  <section class="mt-12 rounded-2xl border border-slate-200 bg-white/80 p-6 dark:border-slate-800 dark:bg-slate-900/40">
+    <h2 class="text-lg font-semibold text-slate-900 dark:text-white">사용 방법</h2>
+    <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">
+      <strong class="text-slate-900 dark:text-white">월 납입액</strong>에 매달 넣을 금액(만 원 단위), <strong
+        class="text-slate-900 dark:text-white"
+        >연 수익률</strong
+      >에 예상 연 수익률(%), <strong class="text-slate-900 dark:text-white">기간</strong>에 납입할 기간(년)을
+      입력하세요. 복리 주기는 연/월/일 중에서 선택할 수 있습니다. 입력을 바꾸면 결과가 바로 반영됩니다.
+    </p>
+  </section>
+
+  <section class="mt-8 rounded-2xl border border-slate-200 bg-white/80 p-6 dark:border-slate-800 dark:bg-slate-900/40">
+    <h2 class="text-lg font-semibold text-slate-900 dark:text-white">이 계산기로 할 수 있는 것</h2>
+    <ul class="mt-3 list-inside list-disc space-y-1 text-sm text-slate-600 dark:text-slate-300">
+      <li>월급에서 매달 적립하는 금액의 N년 후 예상 금액 확인</li>
+      <li>목표 금액에 도달하기 위해 필요한 월 납입액 역산</li>
+      <li>연도별 납입 누계와 복리 성장 비교 (월/연 보기)</li>
+    </ul>
+  </section>
+
+  <section class="mt-8 rounded-2xl border border-slate-200 bg-white/80 p-6 dark:border-slate-800 dark:bg-slate-900/40">
+    <h2 class="text-lg font-semibold text-slate-900 dark:text-white">주의사항</h2>
+    <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">
+      본 계산기는 연복리 기준의 참고용 시뮬레이션입니다. 실제 금융 상품의 이자·수수료·세금은 반영되지
+      않으며, 투자 조언이 아닙니다. 일시금(한 번에 넣는 거치식)이라면
+      <a
+        href={withBase(base, '/compound/lump/')}
+        class="font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+        >거치식 복리 계산기</a
+      >를 이용하세요.
+    </p>
+  </section>
+
+  <section class="mt-8 rounded-2xl border border-slate-200 bg-white/80 p-6 dark:border-slate-800 dark:bg-slate-900/40">
+    <h2 class="text-lg font-semibold text-slate-900 dark:text-white">관련 가이드</h2>
+    <ul class="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
+      <li>
+        <a
+          href={withBase(base, '/guides/compound-interest-basics/')}
+          class="text-emerald-600 hover:underline dark:text-emerald-400"
+          >복리란 무엇인가요?</a
+        >
+        — 복리 개념과 단리와의 차이
+      </li>
+      <li>
+        <a
+          href={withBase(base, '/guides/lump-vs-recurring/')}
+          class="text-emerald-600 hover:underline dark:text-emerald-400"
+          >거치식 vs 적립식, 언제 어떤 계산기를 쓸까</a
+        >
+        — 일시금과 정기 납입 구분
+      </li>
+      <li>
+        <a href={withBase(base, '/guides/')} class="text-emerald-600 hover:underline dark:text-emerald-400"
+          >가이드 목록</a
+        >
+      </li>
+    </ul>
+  </section>
+
+  <section class="mt-8 rounded-2xl border border-slate-200 bg-white/80 p-6 dark:border-slate-800 dark:bg-slate-900/40">
+    <h2 class="text-lg font-semibold text-slate-900 dark:text-white">자주 묻는 질문</h2>
+    <dl class="mt-4 space-y-4 text-sm text-slate-600 dark:text-slate-300">
+      <div>
+        <dt class="font-semibold text-slate-900 dark:text-white">적립식 복리 계산기는 어떻게 쓰나요?</dt>
+        <dd class="mt-1">
+          월 납입액(만 원), 연 수익률(%), 기간(년), 복리 주기를 입력하면 최종 금액과 연도별 누적 금액이
+          표시됩니다. 월/연 보기로 결과를 확인할 수 있습니다.
+        </dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-slate-900 dark:text-white">월 납입액은 세전·세후 중 어떤 금액인가요?</dt>
+        <dd class="mt-1">
+          본 계산기는 입력하신 금액을 그대로 사용합니다. 실제 적금·펀드 등은 가입 상품에 따라
+          세전·세후가 다르므로, 참고용으로만 사용하세요.
+        </dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-slate-900 dark:text-white">거치식과 적립식의 차이는?</dt>
+        <dd class="mt-1">
+          적립식은 매월(또는 주기별) 납입하는 금액이 N년 후 총 얼마가 되는지 계산합니다. 일시금을 한 번에
+          넣는 경우는
+          <a href={withBase(base, '/compound/lump/')} class="text-emerald-600 hover:underline dark:text-emerald-400"
+            >거치식 복리 계산기</a
+          >를 이용하세요.
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
 </Layout>
