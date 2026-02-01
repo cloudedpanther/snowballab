@@ -226,7 +226,7 @@ const RecurringFields = ({ input, onChange }: FieldProps) => (
     <label className="flex flex-col gap-2 text-sm text-slate-600 dark:text-slate-300">
       복리 방식
       <select
-        className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+        className="compound-select rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
         value={input.compound}
         onChange={(event) => onChange({ compound: event.target.value as CompoundFrequency })}
       >
