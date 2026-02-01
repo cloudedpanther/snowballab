@@ -15,7 +15,15 @@ const displayWon = (value: number) => {
   return Number((scaled + 50n) / 100n);
 };
 const formatCurrency = (value: number) => `${currency.format(displayWon(value))}원`;
+const formatCurrencyNumber = (value: number) => currency.format(displayWon(value));
 const formatPercent = (value: number) => `${percent.format(value)}%`;
+
+const formatPeriodMonths = (period: number): string => {
+  if (period < 12) return `${period}개월`;
+  const y = Math.floor(period / 12);
+  const m = period % 12;
+  return m === 0 ? `${period}개월(${y}년)` : `${period}개월(${y}년 ${m}개월)`;
+};
 
 type Scenario = {
   label: string;
@@ -573,7 +581,7 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
             {mode === 'lump'
               ? '회차별 요약'
               : recurringView === 'year'
-                ? '연도별 요약'
+                ? '연별 요약'
                 : '월별 요약'}
           </p>
           {mode === 'recurring' && (
@@ -604,16 +612,28 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
           )}
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[560px] text-left text-xs text-slate-600 dark:text-slate-300">
+          <table className="w-full min-w-0 text-left text-xs text-slate-600 dark:text-slate-300 md:min-w-[560px]">
             <thead className="bg-slate-100 text-slate-500 dark:bg-slate-950 dark:text-slate-400">
               <tr>
-                <th className="px-5 py-3">
-                  {mode === 'lump' ? '회차' : recurringView === 'year' ? '년도' : '월'}
+                <th className="border-r border-slate-200 px-2 py-2 last:border-r-0 dark:border-slate-800 md:border-r-0 md:px-5 md:py-3">
+                  {mode === 'lump' ? '회차' : recurringView === 'year' ? '년' : '월'}
                 </th>
-                {mode === 'recurring' && <th className="px-5 py-3">원금 누적</th>}
-                <th className="px-5 py-3">{mode === 'lump' ? '회차 수익' : '수익 누적'}</th>
-                <th className="px-5 py-3">{mode === 'lump' ? '누적 총액' : '최종 금액'}</th>
-                {mode === 'lump' && <th className="px-5 py-3">누적 수익률</th>}
+                {mode === 'recurring' && (
+                  <th className="border-r border-slate-200 px-2 py-2 last:border-r-0 dark:border-slate-800 md:border-r-0 md:px-5 md:py-3">
+                    원금 누적
+                  </th>
+                )}
+                <th className="border-r border-slate-200 px-2 py-2 last:border-r-0 dark:border-slate-800 md:border-r-0 md:px-5 md:py-3">
+                  {mode === 'lump' ? '회차 수익' : '수익 누적'}
+                </th>
+                <th className="border-r border-slate-200 px-2 py-2 last:border-r-0 dark:border-slate-800 md:border-r-0 md:px-5 md:py-3">
+                  {mode === 'lump' ? '누적 총액' : '최종 금액'}
+                </th>
+                {mode === 'lump' && (
+                  <th className="border-r border-slate-200 px-2 py-2 last:border-r-0 dark:border-slate-800 md:border-r-0 md:px-5 md:py-3">
+                    누적 수익률
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -621,7 +641,7 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
                 <tr>
                   <td
                     colSpan={mode === 'lump' ? 4 : 4}
-                    className="px-5 py-6 text-center text-slate-500 dark:text-slate-400"
+                    className="px-2 py-6 text-center text-slate-500 dark:text-slate-400 md:px-5"
                   >
                     {result
                       ? mode === 'lump'
@@ -633,24 +653,40 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
               ) : (
                 (mode === 'lump' ? result.yearly : recurringRows).map((row) => (
                   <tr key={row.period} className="border-t border-slate-200 dark:border-slate-800">
-                    <td className="px-5 py-3">
-                      {mode === 'lump'
-                        ? row.period
-                        : recurringView === 'year'
-                          ? `${row.period}년`
-                          : `${row.period}월`}
+                    <td className="border-r border-slate-200 px-2 py-2 last:border-r-0 dark:border-slate-800 md:border-r-0 md:px-5 md:py-3">
+                      <span className="md:hidden">{row.period}</span>
+                      <span className="hidden md:inline">
+                        {mode === 'lump'
+                          ? row.period
+                          : recurringView === 'year'
+                            ? `${row.period}년`
+                            : formatPeriodMonths(row.period)}
+                      </span>
                     </td>
                     {mode === 'recurring' && (
-                      <td className="px-5 py-3">{formatCurrency(row.contributedStart)}</td>
+                      <td className="border-r border-slate-200 px-2 py-2 last:border-r-0 dark:border-slate-800 md:border-r-0 md:px-5 md:py-3">
+                        <span className="md:hidden">{formatCurrencyNumber(row.contributedStart)}</span>
+                        <span className="hidden md:inline">{formatCurrency(row.contributedStart)}</span>
+                      </td>
                     )}
-                    <td className="px-5 py-3">
-                      {mode === 'lump' && typeof row.periodInterest === 'number'
-                        ? formatCurrency(row.periodInterest)
-                        : formatCurrency(row.interestEarned)}
+                    <td className="border-r border-slate-200 px-2 py-2 last:border-r-0 dark:border-slate-800 md:border-r-0 md:px-5 md:py-3">
+                      <span className="md:hidden">
+                        {mode === 'lump' && typeof row.periodInterest === 'number'
+                          ? formatCurrencyNumber(row.periodInterest)
+                          : formatCurrencyNumber(row.interestEarned)}
+                      </span>
+                      <span className="hidden md:inline">
+                        {mode === 'lump' && typeof row.periodInterest === 'number'
+                          ? formatCurrency(row.periodInterest)
+                          : formatCurrency(row.interestEarned)}
+                      </span>
                     </td>
-                    <td className="px-5 py-3">{formatCurrency(row.total)}</td>
+                    <td className="border-r border-slate-200 px-2 py-2 last:border-r-0 dark:border-slate-800 md:border-r-0 md:px-5 md:py-3">
+                      <span className="md:hidden">{formatCurrencyNumber(row.total)}</span>
+                      <span className="hidden md:inline">{formatCurrency(row.total)}</span>
+                    </td>
                     {mode === 'lump' && (
-                      <td className="px-5 py-3">
+                      <td className="border-r border-slate-200 px-2 py-2 last:border-r-0 dark:border-slate-800 md:border-r-0 md:px-5 md:py-3">
                         {formatPercent(
                           row.contributedStart === 0
                             ? 0
