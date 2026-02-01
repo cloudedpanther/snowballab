@@ -1,59 +1,74 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { withBase } from '../utils/paths';
+
+const base = import.meta.env.BASE_URL;
 ---
 
 <Layout title="Privacy · Snowballlab" description="Snowballlab 개인정보 처리방침">
-  <section class="space-y-4">
-    <h1 class="text-2xl font-semibold text-slate-900 dark:text-white">Privacy Policy</h1>
-    <p class="text-sm text-slate-600 dark:text-slate-300">
-      본 개인정보 처리방침은 Snowballlab(이하 “사이트”)가 제공하는 서비스의 개인정보 및 쿠키,
-      광고 관련 사항을 설명합니다.
+  <section class="space-y-6">
+    <h1 class="text-2xl font-semibold text-slate-900 dark:text-white md:text-3xl">
+      개인정보 처리방침
+    </h1>
+    <p class="text-slate-600 dark:text-slate-300">
+      Snowballlab(이하 “사이트”)은 이용자의 개인정보를 소중히 합니다. 본 방침은 사이트가 제공하는
+      서비스와 관련하여 수집·이용·보관·파기하는 개인정보 및 쿠키·광고 정책을 설명합니다.
     </p>
-    <div class="space-y-4 rounded-2xl border border-slate-200 bg-white/80 p-5 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-300">
+
+    <div class="space-y-5 rounded-2xl border border-slate-200 bg-white/80 p-6 text-slate-600 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-300">
       <div>
-        <p class="font-semibold text-slate-900 dark:text-white">수집 정보</p>
+        <p class="font-semibold text-slate-900 dark:text-white">1. 수집하는 정보</p>
         <p class="mt-2">
-          현재 사이트는 사용자의 이름, 전화번호 등 식별 가능한 개인정보를 직접 수집하지 않습니다.
-          문의 이메일을 통해 전달되는 내용은 응답 목적으로만 사용됩니다.
+          현재 사이트는 회원가입을 하지 않으며, 이름·전화번호·주소 등 식별 가능한 개인정보를 직접
+          수집하지 않습니다. Contact 페이지를 통해 이메일로 전달해 주신 내용은 문의 응답
+          목적으로만 사용하며, 동의 없이 제3자에게 제공하거나 마케팅에 사용하지 않습니다.
         </p>
       </div>
       <div>
-        <p class="font-semibold text-slate-900 dark:text-white">자동 수집 정보</p>
+        <p class="font-semibold text-slate-900 dark:text-white">2. 자동 수집 정보</p>
         <p class="mt-2">
-          서비스 운영 과정에서 브라우저 종류, 접속 시간 등 기본적인 로그가 자동으로 기록될 수
-          있습니다. 이는 서비스 안정성과 품질 개선을 위한 통계 목적으로만 활용됩니다.
+          서비스 제공 과정에서 IP 주소, 브라우저 종류, 접속 시각, 방문한 페이지 등이 서버 로그에
+          기록될 수 있습니다. 이는 서비스 안정성·품질 개선·보안 목적으로만 활용되며, 개인을 특정할
+          목적으로 사용하지 않습니다.
         </p>
       </div>
       <div>
-        <p class="font-semibold text-slate-900 dark:text-white">쿠키 및 광고</p>
+        <p class="font-semibold text-slate-900 dark:text-white">3. 쿠키 및 광고</p>
         <p class="mt-2">
-          향후 AdSense 또는 Analytics 등 외부 서비스가 적용될 수 있으며, 이 경우 쿠키가 사용될 수
-          있습니다.
+          사이트는 현재 기본적인 동작에 필요한 최소한의 쿠키만 사용할 수 있습니다. 향후 Google
+          AdSense·Analytics 등 제3자 서비스를 도입할 경우, 해당 서비스의 쿠키·개인정보 처리 방침이
+          적용되며, 도입 시 본 페이지에 안내하겠습니다.
         </p>
       </div>
       <div>
-        <p class="font-semibold text-slate-900 dark:text-white">정보 보관 및 삭제</p>
+        <p class="font-semibold text-slate-900 dark:text-white">4. 정보 보관 및 파기</p>
         <p class="mt-2">
-          수집된 정보는 목적 달성 후 지체 없이 파기하며, 법령에 따라 보관이 필요한 경우에만 해당
-          기간 동안 보관합니다.
+          수집된 정보는 명시한 목적이 달성된 후 지체 없이 파기합니다. 법령에서 정한 보관 기간이
+          있는 경우 해당 기간 동안만 보관하며, 기간 경과 후에는 안전하게 삭제합니다.
         </p>
       </div>
       <div>
-        <p class="font-semibold text-slate-900 dark:text-white">외부 링크</p>
+        <p class="font-semibold text-slate-900 dark:text-white">5. 외부 링크</p>
         <p class="mt-2">
-          사이트는 외부 웹사이트로 연결될 수 있으며, 외부 사이트의 개인정보 처리방침은 당사의
-          정책과 다를 수 있습니다.
+          사이트 내 링크를 통해 외부 웹사이트로 이동할 수 있습니다. 외부 사이트의 개인정보
+          처리방침은 당사와 다르므로, 방문 전 해당 사이트의 정책을 확인해 주시기 바랍니다.
         </p>
       </div>
       <div>
-        <p class="font-semibold text-slate-900 dark:text-white">정책 변경</p>
+        <p class="font-semibold text-slate-900 dark:text-white">6. 정책 변경</p>
         <p class="mt-2">
-          본 정책은 법령 및 서비스 변경에 따라 갱신될 수 있으며, 변경 시 페이지에 공지합니다.
+          법령·서비스 변경에 따라 본 방침이 수정될 수 있습니다. 변경 시 이 페이지에 개정 내용과
+          시행일을 공지하며, 중요한 변경은 시행 전에 요지만 안내할 수 있습니다.
         </p>
       </div>
       <div>
-        <p class="font-semibold text-slate-900 dark:text-white">문의</p>
-        <p class="mt-2">개인정보 관련 문의는 Contact 페이지를 참고하세요.</p>
+        <p class="font-semibold text-slate-900 dark:text-white">7. 문의</p>
+        <p class="mt-2">
+          개인정보 처리와 관련한 문의·열람·정정·삭제 요청은
+          <a href={withBase(base, '/contact/')} class="text-emerald-600 hover:underline dark:text-emerald-400"
+            >Contact</a
+          > 페이지의 이메일로 보내 주시기 바랍니다.
+        </p>
       </div>
     </div>
   </section>

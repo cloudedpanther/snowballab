@@ -2,15 +2,25 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Contact · Snowballlab" description="Snowballlab 문의">
-  <section class="space-y-4">
-    <h1 class="text-2xl font-semibold text-slate-900 dark:text-white">Contact</h1>
-    <p class="text-sm text-slate-600 dark:text-slate-300">
-      문의는 아래 이메일로 부탁드립니다. 추후 간단한 폼으로 확장할 수 있습니다.
+<Layout title="Contact · Snowballlab" description="Snowballlab 문의 방법">
+  <section class="space-y-6">
+    <h1 class="text-2xl font-semibold text-slate-900 dark:text-white md:text-3xl">Contact</h1>
+    <p class="text-slate-600 dark:text-slate-300">
+      계산기 사용, 가이드 내용, 사이트 오류, 개인정보·광고 정책 등에 대한 문의는 아래 이메일로
+      보내 주시면 됩니다. 답변은 영업일 기준 1~3일 내에 드리도록 노력하겠습니다.
     </p>
-    <div class="rounded-2xl border border-slate-200 bg-white/80 p-5 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-300">
+
+    <div class="rounded-2xl border border-slate-200 bg-white/80 p-6 text-slate-600 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-300">
       <p class="font-semibold text-slate-900 dark:text-white">이메일</p>
-      <p class="mt-2">silentbuilderr@gmail.com</p>
+      <p class="mt-2">
+        <a href="mailto:silentbuilderr@gmail.com" class="text-emerald-600 hover:underline dark:text-emerald-400"
+          >silentbuilderr@gmail.com</a
+        >
+      </p>
+      <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">
+        문의 시 제목에 「Snowballlab 문의」를 포함해 주시면 빠르게 구분할 수 있습니다. 투자·상품
+        추천 요청은 답변이 제한될 수 있으며, 본 사이트는 투자 조언을 제공하지 않습니다.
+      </p>
     </div>
   </section>
 </Layout>

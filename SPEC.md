@@ -161,7 +161,7 @@
 
 ## 진행 현황
 
-- 완료: Stage 0, Stage 1, Stage 2, Stage 3, Stage 4, Stage 5
+- 완료: Stage 0, Stage 1, Stage 2, Stage 3, Stage 4, Stage 5, Stage 6-1
 
 ## 범위 밖(하지 말 것)
 

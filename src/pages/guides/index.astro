@@ -1,13 +1,13 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
 import { withBase } from '../../utils/paths';
 
 const base = import.meta.env.BASE_URL;
-const guides = [
-  { slug: 'compound-interest-basics', title: '복리란 무엇인가요?' },
-  { slug: 'rate-and-time', title: '수익률과 기간이 결과에 미치는 영향' },
-  { slug: 'investment-goal', title: '목표 금액을 세우는 방법' },
-];
+const entries = await getCollection('guides');
+const guides = entries
+  .map((e) => ({ slug: e.id, title: e.data.title, description: e.data.description }))
+  .sort((a, b) => a.slug.localeCompare(b.slug));
 ---
 
 <Layout
@@ -16,20 +16,18 @@ const guides = [
   canonical={withBase(base, '/guides/')}
 >
   <section class="space-y-4">
-    <h1 class="text-2xl font-semibold">Guides</h1>
-    <p class="text-sm text-slate-600 dark:text-slate-300">
-      복리 계산에 필요한 기본 개념을 정리한 가이드 목록입니다.
+    <h1 class="text-2xl font-semibold text-slate-900 dark:text-white md:text-3xl">Guides</h1>
+    <p class="text-slate-600 dark:text-slate-300">
+      복리 계산에 필요한 기본 개념을 정리한 가이드 목록입니다. 클릭하면 본문을 읽을 수 있습니다.
     </p>
     <div class="grid gap-4 md:grid-cols-2">
       {guides.map((guide) => (
         <a
-          class="rounded-2xl border border-slate-200 bg-white/80 p-5 text-sm text-slate-600 hover:border-slate-400 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-300"
+          class="rounded-2xl border border-slate-200 bg-white/80 p-5 text-sm text-slate-600 hover:border-emerald-400 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-300"
           href={withBase(base, `/guides/${guide.slug}/`)}
         >
           <p class="font-semibold text-slate-900 dark:text-white">{guide.title}</p>
-          <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
-            TODO: Stage 6에서 Markdown 본문 연결
-          </p>
+          <p class="mt-2 text-slate-500 dark:text-slate-400">{guide.description}</p>
         </a>
       ))}
     </div>
