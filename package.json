@@ -12,7 +12,9 @@
     "format:check": "prettier --check .",
     "typecheck": "astro check",
     "check": "npm run format:check && npm run lint && npm run typecheck",
-    "test": "node tests/compound.test.js"
+    "test": "npx tsx tests/compound.test.js",
+    "test:recurring": "npx tsx tests/compound-recurring-15y.test.js",
+    "test:all": "npm run test && npm run test:recurring"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
@@ -35,6 +37,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^1.5.0",
     "prettier": "^3.8.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

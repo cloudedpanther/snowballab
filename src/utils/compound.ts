@@ -37,18 +37,6 @@ const compoundMonthsMap: Record<CompoundFrequency, number> = {
 
 const toFixedPrecision = (value: number) => Math.round(value * 100) / 100;
 const round2 = toFixedPrecision;
-const MONEY_SCALE = 100n;
-const RATE_SCALE = 1000000000n;
-
-const roundDiv = (numerator: bigint, denominator: bigint) =>
-  (numerator + denominator / 2n) / denominator;
-
-const toMoneyScaled = (value: number) => {
-  // TODO: large values should be passed as strings to avoid precision loss.
-  return BigInt(Math.round(value * Number(MONEY_SCALE)));
-};
-
-const fromMoneyScaled = (value: bigint) => Number(value) / Number(MONEY_SCALE);
 
 const calculateLumpSum = (
   principal: number,
@@ -118,69 +106,87 @@ export const calculateCompound = (input: CalculatorInput): CalculatorResult => {
   const totalMonths = years * 12;
 
   if (isYearlyCompound) {
-    const annualRateScaled = roundDiv(BigInt(Math.round(annualRate * Number(RATE_SCALE))), 100n);
-    const monthlyRateScaled = roundDiv(annualRateScaled, 12n);
-    const principalScaled = toMoneyScaled(principal);
-    const monthlyContributionScaled = toMoneyScaled(monthlyContribution);
-    let yearInterestAccScaled = 0n;
-    let capitalizedInterestScaled = 0n;
-    let previousTotalScaled = 0n;
+    // 연복리 적립식(SPEC): 연 6% → 월 0.5% 단리. 연도 경계로 끊어서, 당해 연도에는 전년 말 잔액+당해 연도 납입분만으로 이자 계산. 1년차 1월은 초기금만(납입 없음). 반올림 없음.
+    const r = annualRateDecimal / 12; // 0.005
+    let carried = principal;
 
-    for (let month = 1; month <= totalMonths; month += 1) {
-      const isYearEnd = month % 12 === 0;
+    for (let year = 1; year <= years; year += 1) {
+      for (let t = 1; t <= 12; t += 1) {
+        const month = (year - 1) * 12 + t;
+        if (month > totalMonths) break;
 
-      if (month === 1) {
+        let balanceEnd: number;
+        let balanceStart: number;
+        let interestThisMonth: number;
+        let contributedStart: number;
+
+        if (year === 1 && t === 1) {
+          // 1년차 1월: 초기금만, 당월 말 이자만
+          balanceStart = carried;
+          interestThisMonth = r * carried;
+          balanceEnd = carried + interestThisMonth;
+          contributedStart = balanceStart;
+        } else if (year === 1) {
+          // 1년차 2월~12월: 초기금 + (t-1)회 납입, 단리
+          balanceEnd =
+            carried * (1 + r * t) +
+            monthlyContribution * (t - 1) +
+            monthlyContribution * r * ((t - 1) * t) / 2;
+          balanceStart =
+            t === 1
+              ? carried
+              : carried * (1 + r * (t - 1)) +
+                monthlyContribution * (t - 2) +
+                monthlyContribution * r * ((t - 2) * (t - 1)) / 2;
+          contributedStart = balanceStart + monthlyContribution;
+          interestThisMonth = balanceEnd - balanceStart - monthlyContribution;
+        } else {
+          // 2년차~: 전년 말 잔액(carried) + 당해 연도 t회 납입, 단리. 매월 초 납입이므로 당월 이자 = balanceEnd - (balanceStart + 월납)
+          balanceEnd =
+            carried * (1 + r * t) +
+            monthlyContribution * t +
+            monthlyContribution * r * (t * (t + 1)) / 2;
+          balanceStart =
+            t === 1
+              ? carried
+              : carried * (1 + r * (t - 1)) +
+                monthlyContribution * (t - 1) +
+                monthlyContribution * r * ((t - 1) * t) / 2;
+          contributedStart = t === 1 ? balanceStart + monthlyContribution : balanceStart + monthlyContribution;
+          interestThisMonth = balanceEnd - balanceStart - monthlyContribution;
+        }
+
         monthly.push({
           period: month,
-          contributedStart: 0,
-          interestEarned: 0,
-          total: 0
-        });
-      } else {
-        const contributionCumulativeScaled =
-          principalScaled + monthlyContributionScaled * BigInt(month - 1);
-        const displayedPrincipalScaled = previousTotalScaled + monthlyContributionScaled;
-        const baseForInterestScaled = contributionCumulativeScaled + capitalizedInterestScaled;
-        const monthInterestScaled = roundDiv(baseForInterestScaled * monthlyRateScaled, RATE_SCALE);
-        const totalScaled = displayedPrincipalScaled + monthInterestScaled;
-
-        monthly.push({
-          period: month,
-          contributedStart: fromMoneyScaled(displayedPrincipalScaled),
-          interestEarned: fromMoneyScaled(monthInterestScaled),
-          total: fromMoneyScaled(totalScaled)
+          contributedStart,
+          interestEarned: interestThisMonth,
+          total: balanceEnd
         });
 
-        previousTotalScaled = totalScaled;
-        yearInterestAccScaled += monthInterestScaled;
-      }
+        if (t === 12) {
+          const yearPrincipal =
+            year === 1
+              ? principal + monthlyContribution * 11
+              : carried + monthlyContribution * 12;
+          const yearInterest = monthly
+            .slice(month - 12, month)
+            .reduce((sum, row) => sum + row.interestEarned, 0);
 
-      if (isYearEnd) {
-        const contributionCumulativeScaled =
-          principalScaled + monthlyContributionScaled * BigInt(month - 1);
-        const yearBaseScaled = contributionCumulativeScaled + capitalizedInterestScaled;
-        const interestForYearScaled = yearInterestAccScaled;
-        const yearTotalScaled = yearBaseScaled + interestForYearScaled;
-
-        yearly.push({
-          period: month / 12,
-          contributedStart: fromMoneyScaled(yearBaseScaled),
-          interestEarned: fromMoneyScaled(interestForYearScaled),
-          total: fromMoneyScaled(yearTotalScaled)
-        });
-
-        capitalizedInterestScaled += interestForYearScaled;
-        yearInterestAccScaled = 0n;
-        previousTotalScaled = yearTotalScaled;
+          yearly.push({
+            period: year,
+            contributedStart: yearPrincipal,
+            interestEarned: yearInterest,
+            total: balanceEnd
+          });
+          carried = balanceEnd;
+        }
       }
     }
 
-    balance = round2(fromMoneyScaled(previousTotalScaled));
-    contributed = round2(
-      fromMoneyScaled(
-        principalScaled + monthlyContributionScaled * BigInt(Math.max(totalMonths - 1, 0))
-      )
-    );
+    const lastMonth = monthly[monthly.length - 1];
+    balance = lastMonth ? lastMonth.total : principal;
+    contributed =
+      principal + monthlyContribution * Math.max(totalMonths - 1, 0);
   } else {
     let contributedStartOfYear = contributed;
 
