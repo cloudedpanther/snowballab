@@ -53,4 +53,31 @@ const run = () => {
 };
 
 run();
+
+// 연도별 매월 적립 금액: yearlyContributions 사용 시 총 납입·연도 수 검증 (1년차 11회, 2·3년차 각 12회)
+const runYearlyContributions = () => {
+  const result = calculateCompound({
+    mode: 'recurring',
+    principal: 0,
+    annualRate: 0,
+    years: 3,
+    compound: 'yearly',
+    monthlyContribution: 100000,
+    yearlyContributions: [300000, 400000, 500000]
+  });
+  const expectedTotal =
+    11 * 300000 + 12 * 400000 + 12 * 500000; // 14,100,000
+  assert.ok(
+    result.totalContributed >= expectedTotal - 1000 &&
+      result.totalContributed <= expectedTotal + 1000,
+    `totalContributed ${result.totalContributed} expected ~${expectedTotal}`
+  );
+  assert.equal(result.yearly.length, 3);
+  assert.ok(
+    Math.abs(result.finalAmount - expectedTotal) <= 1000,
+    `0% rate: finalAmount ${result.finalAmount} expected ~${expectedTotal}`
+  );
+};
+runYearlyContributions();
+
 console.log('compound.test.js passed');

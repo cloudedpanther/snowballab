@@ -127,6 +127,11 @@ const buildQuery = (mode: Mode, input: CalculatorInput, recurringView: 'year' | 
     params.set('m', String(input.monthlyContribution));
     params.set('c', input.compound);
     params.set('v', recurringView);
+    if (input.yearlyContributions && input.yearlyContributions.length > 0) {
+      input.yearlyContributions.forEach((v, i) => {
+        params.set(`y${i + 1}`, String(v));
+      });
+    }
   }
   return params;
 };
@@ -200,52 +205,121 @@ const LumpSumFields = ({ input, onChange }: FieldProps) => (
   </>
 );
 
-const RecurringFields = ({ input, onChange }: FieldProps) => (
-  <>
-    <NumberInput
-      label="초기금액(원)"
-      value={input.principal}
-      min={0}
-      step={10000}
-      onValueChange={(value) => onChange({ principal: value })}
-    />
-    <NumberInput
-      label="기대 수익률(%)"
-      value={input.annualRate}
-      min={0}
-      step={0.1}
-      onValueChange={(value) => onChange({ annualRate: value })}
-    />
-    <NumberInput
-      label="기간(년)"
-      value={input.years}
-      min={0}
-      step={1}
-      onValueChange={(value) => onChange({ years: value })}
-    />
-    <label className="flex flex-col gap-2 text-sm text-slate-600 dark:text-slate-300">
-      복리 방식
-      <select
-        className="compound-select rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
-        value={input.compound}
-        onChange={(event) => onChange({ compound: event.target.value as CompoundFrequency })}
-      >
-        {compoundOptionsByMode.recurring.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </label>
-    <NumberInput
-      label="매월 적립 금액(원)"
-      value={input.monthlyContribution}
-      min={0}
-      step={10000}
-      onValueChange={(value) => onChange({ monthlyContribution: value })}
-    />
-  </>
-);
+const RecurringFields = ({ input, onChange }: FieldProps) => {
+  const useYearly = input.yearlyContributions && input.yearlyContributions.length > 0;
+  const years = Math.max(0, Math.floor(input.years));
+  const yearlyContributions = input.yearlyContributions ?? [];
+
+  const handleYearsChange = (value: number) => {
+    const newYears = Math.max(0, Math.floor(value));
+    if (useYearly && yearlyContributions.length > 0) {
+      const resized =
+        newYears <= yearlyContributions.length
+          ? yearlyContributions.slice(0, newYears)
+          : [
+              ...yearlyContributions,
+              ...Array(newYears - yearlyContributions.length).fill(input.monthlyContribution)
+            ];
+      onChange({ years: newYears, yearlyContributions: resized });
+    } else {
+      onChange({ years: newYears });
+    }
+  };
+
+  const handleYearlyContributionChange = (yearIndex: number, value: number) => {
+    const next = [...yearlyContributions];
+    while (next.length <= yearIndex) next.push(input.monthlyContribution);
+    next[yearIndex] = value;
+    onChange({ yearlyContributions: next });
+  };
+
+  return (
+    <>
+      <NumberInput
+        label="초기금액(원)"
+        value={input.principal}
+        min={0}
+        step={10000}
+        onValueChange={(value) => onChange({ principal: value })}
+      />
+      <NumberInput
+        label="기대 수익률(%)"
+        value={input.annualRate}
+        min={0}
+        step={0.1}
+        onValueChange={(value) => onChange({ annualRate: value })}
+      />
+      <NumberInput
+        label="기간(년)"
+        value={input.years}
+        min={0}
+        step={1}
+        onValueChange={handleYearsChange}
+      />
+      <label className="flex flex-col gap-2 text-sm text-slate-600 dark:text-slate-300">
+        복리 방식
+        <select
+          className="compound-select rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+          value={input.compound}
+          onChange={(event) => onChange({ compound: event.target.value as CompoundFrequency })}
+        >
+          {compoundOptionsByMode.recurring.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <div className={useYearly ? 'opacity-50' : ''}>
+        <NumberInput
+          label="매월 적립 금액(원)"
+          value={input.monthlyContribution}
+          min={0}
+          step={10000}
+          onValueChange={(value) => onChange({ monthlyContribution: value })}
+        />
+        {useYearly && (
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            연도별 설정 시 이 값은 사용하지 않습니다.
+          </p>
+        )}
+      </div>
+      <div className="flex flex-col gap-2 md:col-span-2">
+        <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+          <input
+            type="checkbox"
+            checked={useYearly}
+            onChange={(e) => {
+              if (e.target.checked) {
+                onChange({
+                  yearlyContributions: Array(years).fill(input.monthlyContribution)
+                });
+              } else {
+                onChange({ yearlyContributions: undefined });
+              }
+            }}
+            className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 dark:border-slate-700"
+          />
+          연도별로 매월 적립 금액 다르게 설정
+        </label>
+        {useYearly && years > 0 && (
+          <div className="mt-2 grid gap-2 rounded-lg border border-slate-200 bg-slate-50/50 p-3 dark:border-slate-700 dark:bg-slate-900/30 sm:grid-cols-2 md:grid-cols-3">
+            {Array.from({ length: years }, (_, i) => i + 1).map((yearNum) => (
+              <NumberInput
+                key={yearNum}
+                label={`${yearNum}년차 매월(원)`}
+                value={yearlyContributions[yearNum - 1] ?? input.monthlyContribution}
+                min={0}
+                step={10000}
+                onValueChange={(value) => handleYearlyContributionChange(yearNum - 1, value)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
 
 type CompoundCalculatorProps = {
   mode: Mode;
@@ -264,6 +338,31 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
     () => (calculatedInput ? calculateCompound(calculatedInput) : null),
     [calculatedInput]
   );
+
+  const getYearlyValidationError = (inp: CalculatorInput): string | null => {
+    if (inp.mode !== 'recurring') return null;
+    const yc = inp.yearlyContributions;
+    if (!Array.isArray(yc) || yc.length === 0) return null;
+    const yrs = Math.max(0, Math.floor(inp.years));
+    const missing: number[] = [];
+    for (let i = 0; i < yrs; i += 1) {
+      const v = yc[i];
+      if (v === undefined || !Number.isFinite(v) || v < 0) missing.push(i + 1);
+    }
+    if (missing.length === 0) return null;
+    return `연도별 매월 적립 금액을 모두 입력해 주세요. (${missing.join(', ')}년차)`;
+  };
+
+  const handleCalculate = () => {
+    if (mode === 'recurring') {
+      const err = getYearlyValidationError(input);
+      if (err) {
+        window.alert(err);
+        return;
+      }
+    }
+    setCalculatedInput(input);
+  };
 
   const handleScenario = (scenario: Scenario) => {
     if (scenario.input.mode === 'lump') {
@@ -295,23 +394,32 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
         setCalculatedInput(nextInput);
       }
     } else {
-      const nextInput = {
+      const yearsParam = parseNumberParam(params.get('y'), recurringDefault.years);
+      const monthlyParam = parseNumberParam(
+        params.get('m'),
+        recurringDefault.monthlyContribution
+      );
+      const yearlyContributions: number[] = [];
+      for (let i = 1; i <= yearsParam; i += 1) {
+        const v = params.get(`y${i}`);
+        if (v !== null) yearlyContributions.push(parseNumberParam(v, monthlyParam));
+      }
+      const nextInput: CalculatorInput = {
         ...recurringDefault,
         principal: parseNumberParam(params.get('p'), recurringDefault.principal),
         annualRate: parseNumberParam(params.get('r'), recurringDefault.annualRate),
-        years: parseNumberParam(params.get('y'), recurringDefault.years),
-        monthlyContribution: parseNumberParam(
-          params.get('m'),
-          recurringDefault.monthlyContribution
-        ),
-        compound: parseCompound(params.get('c'), recurringDefault.compound)
+        years: yearsParam,
+        monthlyContribution: monthlyParam,
+        compound: parseCompound(params.get('c'), recurringDefault.compound),
+        ...(yearlyContributions.length > 0 ? { yearlyContributions } : {})
       };
       if (
         params.has('p') ||
         params.has('r') ||
         params.has('y') ||
         params.has('m') ||
-        params.has('c')
+        params.has('c') ||
+        yearlyContributions.length > 0
       ) {
         setRecurringInput(nextInput);
         setCalculatedInput(nextInput);
@@ -426,7 +534,7 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setCalculatedInput(input)}
+                onClick={handleCalculate}
                 className="rounded-full border border-emerald-400 bg-emerald-400/10 px-4 py-1 text-xs font-semibold text-emerald-600 hover:border-emerald-500 dark:text-emerald-200"
               >
                 계산하기
