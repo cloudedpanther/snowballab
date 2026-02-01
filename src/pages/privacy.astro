@@ -5,7 +5,7 @@ import { withBase } from '../utils/paths';
 const base = import.meta.env.BASE_URL;
 ---
 
-<Layout title="Privacy · Snowballlab" description="Snowballlab 개인정보 처리방침">
+<Layout title="Privacy · Snowballlab" description="Snowballlab 개인정보 처리방침" canonical={withBase(base, '/privacy/')}>
   <section class="space-y-6">
     <h1 class="text-2xl font-semibold text-slate-900 dark:text-white md:text-3xl">
       개인정보 처리방침

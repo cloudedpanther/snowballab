@@ -1,8 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { withBase } from '../utils/paths';
+
+const base = import.meta.env.BASE_URL;
 ---
 
-<Layout title="About · Snowballlab" description="Snowballlab 소개 및 운영 목적">
+<Layout title="About · Snowballlab" description="Snowballlab 소개 및 운영 목적" canonical={withBase(base, '/about/')}>
   <section class="space-y-6">
     <h1 class="text-2xl font-semibold text-slate-900 dark:text-white md:text-3xl">About</h1>
     <p class="text-slate-600 dark:text-slate-300">

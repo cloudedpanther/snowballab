@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import { toAbsoluteUrl, withBase } from '../utils/paths';
 
-const { title = 'Snowballlab', description = '복리 계산기 기반 유틸 사이트', canonical, ogImage } =
+const { title = 'Snowballlab', description = '복리 계산기 기반 유틸 사이트', canonical, ogImage, robots } =
   Astro.props;
 const base = import.meta.env.BASE_URL;
 const site = import.meta.env.SITE ?? 'https://snowballlab.co.kr';
@@ -24,6 +24,7 @@ const ogImageHref = toAbsoluteUrl(ogImagePath, site);
     <link rel="manifest" href={withBase(base, '/favicon/site.webmanifest')} />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    {robots && <meta name="robots" content={robots} />}
     <link rel="canonical" href={canonicalHref} />
     <title>{title}</title>
     <meta property="og:site_name" content="Snowballlab" />
@@ -32,6 +33,9 @@ const ogImageHref = toAbsoluteUrl(ogImagePath, site);
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalHref} />
     <meta property="og:image" content={ogImageHref} />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:locale" content="ko_KR" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={ogImageHref} />
     <meta name="twitter:title" content={title} />

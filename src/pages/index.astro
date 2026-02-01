@@ -3,6 +3,53 @@ import Layout from '../layouts/Layout.astro';
 import { withBase } from '../utils/paths';
 
 const base = import.meta.env.BASE_URL;
+
+const faqPage = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '복리가 뭔가요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '원금에 붙은 이자를 다음 기간의 원금에 다시 포함해 이자를 계산하는 방식입니다. 이자가 이자를 낳아 시간이 지날수록 성장 속도가 빨라집니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '거치식과 적립식의 차이는?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '거치식은 지금 한 번 넣은 금액이 N년 후 얼마가 되는지 보는 계산이고, 적립식은 매달(또는 주기별) 넣는 금액이 N년 후 총 얼마가 되는지 보는 계산입니다. 퇴직금·일시금은 거치식, 월급에서 매달 적립하는 경우는 적립식을 쓰면 됩니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '연 수익률은 어떻게 넣나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '예상 연 수익률을 퍼센트(%)로 입력합니다. 은행 예·적금 수준(2~4%), 주식·펀드 기대 수익(5~7% 등)을 참고할 수 있으나, 과거 수익이 미래를 보장하지는 않습니다. 보수적으로 잡는 편이 좋습니다.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '계산 결과가 실제 상품과 같나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '이 사이트는 연복리 기준의 단순 시뮬레이션입니다. 실제 예금·펀드 등은 월복리·일복리, 수수료·세금 등이 달라 결과가 다를 수 있습니다. 참고용으로만 사용하세요.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '투자 조언을 하나요?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '아닙니다. 본 사이트의 모든 정보는 일반적인 참고용이며, 투자·저축 결정과 그 결과에 대한 책임은 전적으로 이용자 본인에게 있습니다.',
+      },
+    },
+  ],
+};
 ---
 
 <Layout
@@ -131,4 +178,5 @@ const base = import.meta.env.BASE_URL;
       책임입니다.
     </p>
   </section>
+  <script type="application/ld+json" set:html={JSON.stringify(faqPage)} is:inline />
 </Layout>
