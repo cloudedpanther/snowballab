@@ -35,7 +35,10 @@ expectedMonthly.forEach((exp) => {
 // 15년차 월별·최종은 500원 단위 누적으로 기대표와 소폭 차이 가능
 const month180 = result.monthly.find((r) => r.period === 180);
 assert.ok(month180, 'Missing month 180');
-assert.ok(roundWon(month180.total) >= 28800000 && roundWon(month180.total) <= 29300000, 'month 180 total in range');
+assert.ok(
+  roundWon(month180.total) >= 28800000 && roundWon(month180.total) <= 29300000,
+  'month 180 total in range'
+);
 
 // 연도별: 1년차는 기대값과 정확히 일치
 const year1 = result.yearly.find((r) => r.period === 1);
@@ -46,7 +49,8 @@ assert.strictEqual(roundWon(year1.total), 1239000, 'year 1 최종 금액');
 
 // 15년차 원금 = 전년 말 잔액 + 당해 연도 납입 12회 (SPEC)
 assert.ok(
-  Math.abs(roundWon(result.yearly.find((r) => r.period === 15).contributedStart) - 27237667) <= 100000,
+  Math.abs(roundWon(result.yearly.find((r) => r.period === 15).contributedStart) - 27237667) <=
+    100000,
   'year 15 원금 (전년말+당해연도납입)'
 );
 assert.ok(Math.abs(roundWon(result.finalAmount) - 28838927) <= 1000, 'finalAmount');

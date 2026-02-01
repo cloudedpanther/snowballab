@@ -131,13 +131,13 @@ export const calculateCompound = (input: CalculatorInput): CalculatorResult => {
           balanceEnd =
             carried * (1 + r * t) +
             monthlyContribution * (t - 1) +
-            monthlyContribution * r * ((t - 1) * t) / 2;
+            (monthlyContribution * r * ((t - 1) * t)) / 2;
           balanceStart =
             t === 1
               ? carried
               : carried * (1 + r * (t - 1)) +
                 monthlyContribution * (t - 2) +
-                monthlyContribution * r * ((t - 2) * (t - 1)) / 2;
+                (monthlyContribution * r * ((t - 2) * (t - 1))) / 2;
           contributedStart = balanceStart + monthlyContribution;
           interestThisMonth = balanceEnd - balanceStart - monthlyContribution;
         } else {
@@ -145,14 +145,15 @@ export const calculateCompound = (input: CalculatorInput): CalculatorResult => {
           balanceEnd =
             carried * (1 + r * t) +
             monthlyContribution * t +
-            monthlyContribution * r * (t * (t + 1)) / 2;
+            (monthlyContribution * r * (t * (t + 1))) / 2;
           balanceStart =
             t === 1
               ? carried
               : carried * (1 + r * (t - 1)) +
                 monthlyContribution * (t - 1) +
-                monthlyContribution * r * ((t - 1) * t) / 2;
-          contributedStart = t === 1 ? balanceStart + monthlyContribution : balanceStart + monthlyContribution;
+                (monthlyContribution * r * ((t - 1) * t)) / 2;
+          contributedStart =
+            t === 1 ? balanceStart + monthlyContribution : balanceStart + monthlyContribution;
           interestThisMonth = balanceEnd - balanceStart - monthlyContribution;
         }
 
@@ -165,9 +166,7 @@ export const calculateCompound = (input: CalculatorInput): CalculatorResult => {
 
         if (t === 12) {
           const yearPrincipal =
-            year === 1
-              ? principal + monthlyContribution * 11
-              : carried + monthlyContribution * 12;
+            year === 1 ? principal + monthlyContribution * 11 : carried + monthlyContribution * 12;
           const yearInterest = monthly
             .slice(month - 12, month)
             .reduce((sum, row) => sum + row.interestEarned, 0);
@@ -185,8 +184,7 @@ export const calculateCompound = (input: CalculatorInput): CalculatorResult => {
 
     const lastMonth = monthly[monthly.length - 1];
     balance = lastMonth ? lastMonth.total : principal;
-    contributed =
-      principal + monthlyContribution * Math.max(totalMonths - 1, 0);
+    contributed = principal + monthlyContribution * Math.max(totalMonths - 1, 0);
   } else {
     let contributedStartOfYear = contributed;
 

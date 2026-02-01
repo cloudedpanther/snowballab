@@ -5,3 +5,18 @@
 button {
   cursor: pointer;
 }
+
+/* 가이드 페이지: 소제목·문단 사이 여백 */
+.guide-prose h2 {
+  margin-top: 2em;
+  padding-top: 0.25em;
+}
+.guide-prose h2:first-child {
+  margin-top: 0;
+}
+.guide-prose h3 {
+  margin-top: 1.5em;
+}
+.guide-prose p + p {
+  margin-top: 1em;
+}
