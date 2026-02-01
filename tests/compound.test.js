@@ -65,8 +65,7 @@ const runYearlyContributions = () => {
     monthlyContribution: 100000,
     yearlyContributions: [300000, 400000, 500000]
   });
-  const expectedTotal =
-    11 * 300000 + 12 * 400000 + 12 * 500000; // 14,100,000
+  const expectedTotal = 11 * 300000 + 12 * 400000 + 12 * 500000; // 14,100,000
   assert.ok(
     result.totalContributed >= expectedTotal - 1000 &&
       result.totalContributed <= expectedTotal + 1000,

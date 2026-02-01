@@ -123,7 +123,8 @@ export const calculateCompound = (input: CalculatorInput): CalculatorResult => {
     let runningContributed = 0;
 
     for (let year = 1; year <= years; year += 1) {
-      const contribThisYear = year === 1 ? getContribution(2) : getContribution((year - 1) * 12 + 1);
+      const contribThisYear =
+        year === 1 ? getContribution(2) : getContribution((year - 1) * 12 + 1);
 
       for (let t = 1; t <= 12; t += 1) {
         const month = (year - 1) * 12 + t;
@@ -155,9 +156,7 @@ export const calculateCompound = (input: CalculatorInput): CalculatorResult => {
           runningContributed += contribThisYear;
         } else {
           balanceEnd =
-            carried * (1 + r * t) +
-            contribThisYear * t +
-            (contribThisYear * r * (t * (t + 1))) / 2;
+            carried * (1 + r * t) + contribThisYear * t + (contribThisYear * r * (t * (t + 1))) / 2;
           balanceStart =
             t === 1
               ? carried

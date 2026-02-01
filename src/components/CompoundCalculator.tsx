@@ -395,10 +395,7 @@ export default function CompoundCalculator({ mode }: CompoundCalculatorProps) {
       }
     } else {
       const yearsParam = parseNumberParam(params.get('y'), recurringDefault.years);
-      const monthlyParam = parseNumberParam(
-        params.get('m'),
-        recurringDefault.monthlyContribution
-      );
+      const monthlyParam = parseNumberParam(params.get('m'), recurringDefault.monthlyContribution);
       const yearlyContributions: number[] = [];
       for (let i = 1; i <= yearsParam; i += 1) {
         const v = params.get(`y${i}`);
