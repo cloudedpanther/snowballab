@@ -296,7 +296,7 @@ const RecurringFields = ({ input, onChange }: FieldProps) => {
         <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
           <input
             type="checkbox"
-            checked={useYearly}
+            checked={Boolean(useYearly)}
             onChange={(e) => {
               if (e.target.checked) {
                 onChange({
